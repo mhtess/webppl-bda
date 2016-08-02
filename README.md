@@ -2,15 +2,15 @@
 
 ## Data analysis helpers
 
-+ `observeData(params)`: `params = {data: data, link: Dist, display: boolean}` e.g., `observeData({data: [1,2], link: Binomial({n:2, p:0.5}), display: true})` (display will print out the score to the console). Shorthand for `factor(Dist.score(data))` (but works with arrays as well as singleton data points)
++ `observeData({data: data, link: Dist, display: true/false})`: e.g., `observeData({data: [1,2], link: Binomial({n:2, p:0.5}), display: true})` (display will print out the score to the console). Shorthand for `factor(Dist.score(data))` (but works with arrays as well as singleton data points)
 + `foreach(array, function)`: like `map`, but no return (useful for IncrementalMH)
 + `marginalize(Dist, label)`: go from a joint distribution to a marginal distribution
 
 ## Linking functions 
 
-+ `DiscreteGaussian(params)`: a discretized Gaussian disribution. An example using all of the params (only `mu` and `sigma` are necessary) [default lower and upper set to 1 and 7]
-+ `OrdinalGaussian(params)`: an ordinalized Gaussian distribution (e.g., for ordinal regression). e.g. `OrdinalGaussian({mu: 1, sigma:2.5, thresholds: [1.5, 2.5, 3.5, 4.5, 5.5, 6.5]})`
-+ `gaussianCDF(params)`: e.g. `gaussianCDF({mu: 3.5, sigma:1, x: 2})`
++ `DiscreteGaussian({mu: ..., sigma: ..., lower: ..., upper: ..., binWidth: ...})`: a discretized Gaussian disribution with lower and upper bound stipulated [default lower and upper set to 1 and 7]
++ `OrdinalGaussian({mu: ..., sigma: ..., thresholds: ...})`: an ordinalized Gaussian distribution (e.g., for ordinal regression). e.g. `OrdinalGaussian({mu: 1, sigma:2.5, thresholds: [1.5, 2.5, 3.5, 4.5, 5.5, 6.5]})`
++ `gaussianCDF({mu: ..., sigma: ..., x: ...})`: e.g. `gaussianCDF({mu: 3.5, sigma:1, x: 2})`
 
 ## Misc helpers
 

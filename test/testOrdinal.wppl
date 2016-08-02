@@ -1,0 +1,38 @@
+var lowerBound = 1, upperBound = 7, binWidth = 1;
+
+var generateLikert = function(){
+	var metric = gaussian(4,3);
+	// var thresholds = [1.5, 2.5, 3.5, 4.5, 5.5, 6.5];
+	var thresholds = [1.5, 2.25, 3, 5, 5.75, 6.5];
+	filter(function(x){
+		x == 1 ? metric < thresholds[0] :
+		x == 7 ? metric > thresholds[5] :
+		(metric > thresholds[x-2]) & (metric < thresholds[x-1]);
+	}, bdaUtils.range(1,8,1))[0];
+};
+
+var data = repeat(100, generateLikert);
+
+var model = function(){
+	var thresholds = map(function(b){
+		b == lowerBound ? lowerBound + binWidth/2 :
+		b == (upperBound-1) ? upperBound - binWidth/2 :
+		gaussian(b + 0.5, 1/2)
+	}, bdaUtils.range(lowerBound, upperBound, binWidth) )
+
+	var mu = sample(UniformDrift({a: 1, b:7, r:0.5}));
+	var sigma = sample(UniformDrift({a: 0, b:5, r:0.5}));
+
+	observeData({
+		data: data,
+		link: OrdinalGaussian({thresholds: thresholds, mu: mu, sigma: sigma})
+	})
+
+	return {mu: mu, sigma: sigma}
+	//bdaUtils.extend({mu: mu, sigma: sigma},
+	//	bdaUtils.object(_.zip(utils.range(1,7,1), thresholds));
+}
+
+Infer({method: "MCMC", samples: 1000, burn: 500, verbose:true}, model)
+
+// OrdinalLink({thresholds: thresholds, mu: 1, sigma:2.5})

@@ -1,0 +1,14 @@
+{
+  "name": "bda-utils",
+  "main": "src/bda-utils.js",
+  "webppl": {
+    "wppl": [
+      "src/bda-utils.wppl"
+    ],
+  "headers":["src/header.js"]
+  },
+  "dependencies" : {
+    "underscore" : "~1.8",
+    "compute-erf" : ""
+  }
+}

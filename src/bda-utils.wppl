@@ -1,0 +1,82 @@
+var exp = function(x){ return Math.exp(x); };
+
+var observeData = function(args) {
+    var scr = _.isArray(args.data) ?
+            sum( map( function(d) { return args.link.score(d) }, args.data) ) :
+           args.link.score(args.data);
+    args.display ? display(scr) : null;
+    factor(scr);
+};
+
+var foreach = function(lst, fn) {
+    var foreach_ = function(i) {
+        if (i < lst.length) {
+            fn(lst[i]);
+            foreach_(i + 1);
+        }
+    };
+    foreach_(0);
+};
+
+var marginalize = function(myDist, label){
+    Infer({method: "enumerate"}, function(){
+        var x = sample(myDist);
+        return x[label]
+    });
+};
+
+var probability = function(x, Dist) {
+    return exp(Dist.score(x));
+}
+
+// helper existential function, otherwise 0 ? returns false
+var exists = function(x){
+  return (x == 0) ? true : x ? true: false
+}
+
+// e.g. DiscreteGaussian({mu: 3, sigma: 10})
+// e.g. DiscreteGaussian({mu: 3, sigma: 3, upper: 5})
+// e.g. DiscreteGaussian({mu: 3, sigma: 10, lower: 0, upper: 3})
+// e.g. DiscreteGaussian({mu: 3, sigma: 10, lower: 0, upper: 3, binWidth: 0.5})
+var DiscreteGaussian = function(params) {
+  var mu = params.mu, sigma = params.sigma;
+  var lowerBound = exists(params.lower) ? params.lower : 1;
+  var upperBound = exists(params.upper) ? params.upper : 7;
+  var binWidth = exists(params.binWidth) ? params.binWidth : 1;
+  var bins = bdaUtils.range(lowerBound, upperBound+1, binWidth);
+  // Categorical doesn't normalize for us, so we need to prenormalize
+  // and make sure all the bins have at least epsilon probability to enforce support
+  var discreteProbs = normalize(map(function(b){
+    return (Math.exp(Gaussian({mu:mu, sigma:sigma}).score(b))
+	    + Number.EPSILON);
+  }, bins));
+  return Categorical({ps: discreteProbs, vs: bins});
+};
+
+
+// e.g. gaussianCDF({mu: 3.5, sigma:1, x: 2})
+var gaussianCDF = function(params){
+  var x = params.x;
+  var mu = exists(params.mu) ? params.mu : 0;
+  var sigma = exists(params.sigma) ? params.sigma : 1;
+  var erfNum = x - mu;
+  var erfDen = sigma * Math.sqrt(2);
+  return (1/2)*(1 + bdaUtils.erf(erfNum/erfDen))
+}
+
+// OrdinalGaussian({mu: 1, sigma:2.5, thresholds: [1.5, 2.5, 3.5, 4.5, 5.5, 6.5]})
+
+var OrdinalGaussian = function(params){
+  var thresholds = params.thresholds;
+  var mu = params.mu, sigma = params.sigma;
+  var bins = bdaUtils.range(lowerBound, upperBound+1, binWidth);
+
+  var probs = mapIndexed(function(i, b){
+    i == 0 ? gaussianCDF({x:thresholds[i], mu: mu, sigma: sigma}) :
+    i == thresholds.length ? 1 - gaussianCDF({x:thresholds[i-1], mu: mu, sigma: sigma}) :
+    Math.max(Number.EPSILON, gaussianCDF({x:thresholds[i], mu: mu, sigma: sigma}) - 
+                gaussianCDF({x:thresholds[i-1], mu: mu, sigma: sigma}))
+  }, bins)
+
+  return Categorical({ps: probs, vs: bins});
+}

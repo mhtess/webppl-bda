@@ -1,14 +1,17 @@
 {
   "name": "bda-utils",
+  "version": "0.0.1",
   "main": "src/bda-utils.js",
   "webppl": {
     "wppl": [
       "src/bda-utils.wppl"
     ],
-  "headers":["src/header.js"]
+    "headers": [
+      "src/header.js"
+    ]
   },
-  "dependencies" : {
-    "underscore" : "~1.8",
-    "compute-erf" : ""
+  "dependencies": {
+    "lodash": "^4.0.0",
+    "compute-erf": ""
   }
 }

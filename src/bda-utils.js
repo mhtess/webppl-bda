@@ -1,4 +1,4 @@
-var _ = require("underscore");
+var _ = require("lodash");
 var erf = require( 'compute-erf' );
 
 function isNumeric(num){

@@ -26,3 +26,12 @@ Accessed via `bdaUtils.function`, e.g. `bdaUtils.isNumeric(x)`
 + `fillArray(x, length)`
 + `erf(x)` where x is numeric
 + `closest(x, array)`: find the closest value to x in array of numbers
+
+
+## Installation
+
+You can install this pacakge using: 
+
+```
+npm install --prefix ~/.webppl mhtess/webppl-bda
+```
